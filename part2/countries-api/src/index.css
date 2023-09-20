@@ -1,0 +1,21 @@
+img {
+  width: 100%;
+}
+
+.flag {
+  max-width: 50vw;
+}
+
+.list-container {
+  text-align: start;
+  margin-bottom: 2em;
+}
+
+.language-container {
+  text-align: start;
+  width: 50vw;
+}
+
+.weatherIcon {
+  width: 100px;
+}
