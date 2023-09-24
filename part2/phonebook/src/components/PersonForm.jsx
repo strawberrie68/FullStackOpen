@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const PersonForm = (props) => {
   const [newName, setNewName] = useState({
-    id: "",
-    name: "",
-    number: "",
+    name: '',
+    number: '',
   });
 
   const onChange = (event) => {
@@ -15,6 +14,9 @@ const PersonForm = (props) => {
   };
 
   const toBeUpdated = (personInfo) => {
+    console.log(personInfo);
+    console.log(`_id: ${personInfo._id}`);
+
     console.log(newName);
     if (
       window.confirm(
@@ -22,9 +24,10 @@ const PersonForm = (props) => {
       )
     ) {
       try {
-        const newInfo = { ...personInfo[0], number: newName.number };
-        props.updatePerson(personInfo[0].id, newInfo);
-        reset();
+        const newInfo = { ...personInfo, number: newName.number };
+        console.log(newInfo);
+        props.updatePerson(personInfo._id, newInfo);
+        clearForm();
       } catch (err) {
         console.log(`${err} can not update person`);
       }
@@ -33,29 +36,24 @@ const PersonForm = (props) => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    console.log(event);
+    console.log(props.persons);
+    const isPerson = props.persons.find(
+      (person) => person.name === newName.name
+    );
 
-    if (props.persons.find((person) => person.name === newName.name)) {
-      toBeUpdated(
-        props.persons.filter((person) => person.name === newName.name)
-      );
-      console.log("there is a duplciate");
+    if (isPerson) {
+      console.log('there is a duplciate');
+      toBeUpdated(isPerson);
     } else {
-      try {
-        const randomId = Math.floor(Math.random() * 100);
-        const newInfo = { ...newName, id: randomId };
-        props.handleClick(newInfo);
-      } catch (err) {
-        console.log(err + "could not add person");
-      }
-      reset();
+      props.handleClick(newName);
+      clearForm();
     }
   };
 
-  const reset = () => {
+  const clearForm = () => {
     setNewName({
-      name: "",
-      number: "",
+      name: '',
+      number: '',
     });
   };
 
@@ -65,8 +63,8 @@ const PersonForm = (props) => {
         <div>
           name:
           <input
-            type="text"
-            name="name"
+            type='text'
+            name='name'
             value={newName.name}
             onChange={onChange}
           />
@@ -74,14 +72,14 @@ const PersonForm = (props) => {
         <div>
           number:
           <input
-            type="text"
-            name="number"
+            type='text'
+            name='number'
             value={newName.number}
             onChange={onChange}
           />
         </div>
         <div>
-          <button type="submit">add</button>
+          <button type='submit'>add</button>
         </div>
       </form>
     </div>

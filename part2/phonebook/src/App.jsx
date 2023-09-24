@@ -13,20 +13,19 @@ const App = () => {
 
   const addTo = (newName) => {
     personServices
-      .create(newName)
-      .then(() => {
-        setPersons(persons.concat(newName));
+      .create({ name: newName.name, number: newName.number })
+      .then((createdPerson) => {
+        setPersons(persons.concat(createdPerson));
         console.log("person added");
       })
       .then(() => {
         reset("successful", "added", newName.name);
       })
       .catch((error) => {
-        reset("unsuccessful", "added", newName.name);
+        reset("unsuccessful", error.response.data.error, newName.name);
+        console.log(error.response.data.error);
       });
   };
-  console.log(errorMessage);
-  console.log(persons);
 
   useEffect(() => {
     personServices.getAll().then((intialPeople) => {
@@ -35,36 +34,35 @@ const App = () => {
   }, []);
 
   const removeClicked = (person) => {
-    console.log(`button is clicked ${person.id}`);
+    console.log(`button is clicked ${person.name}`);
     personServices
-      .removePerson(person.id)
+      .removePerson(person._id)
       .then(() => {
-        console.log("removed button clicked");
-        setPersons(persons.filter((n) => n.id !== person.id));
+        setPersons(persons.filter((n) => n._id !== person._id));
         reset("successful", "removed", person.name);
       })
-      .catch((error) => {
+      .catch(() => {
         reset("unsuccessful", "removed", person.name);
       });
   };
-  const fetchData = () => {
-    personServices.getAll().then((intialPeople) => {
-      setPersons(intialPeople);
-    });
-  };
 
-  const updatePerson = (id, newInfo) => {
+  const updatePerson = (idObject, newInfo) => {
+    console.log(idObject.id);
+    const id = idObject;
+
     personServices
       .update(id, newInfo)
-      .then(() => {
-        fetchData();
+      .then((response) => {
+        console.log(persons);
+        setPersons(persons.map((p) => (p.id !== id ? p : response.data)));
       })
       .then(() => {
-        reset("successful", "updated", newInfo);
+        reset("successful", "updated", newInfo.name);
       })
       .catch((error) => {
         console.log(error);
-        reset("unsuccessful", "removed", newInfo.name);
+        reset("unsuccessful", error.response.data.error, newInfo.name);
+        console.log(error.response.data.error);
       });
   };
 
@@ -75,10 +73,10 @@ const App = () => {
         setSuccessfulMessage(null);
       }, 5000);
     } else {
-      setErrorMessage(`'${name}' was already ${action} from server`);
+      setErrorMessage(`${action} `);
       setTimeout(() => {
         setErrorMessage(null);
-      }, 5000);
+      }, 10000);
     }
   };
 
